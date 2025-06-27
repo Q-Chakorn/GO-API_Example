@@ -11,27 +11,29 @@ type PokeDex struct {
 	TYPE2 string `json:"type2"`
 }
 
-var pokedexs = []PokeDex {
+var pokemons = []PokeDex {
 	{ID:"1" , NAME:"Bulbasaur" , TYPE1:"grass" , TYPE2:"poison" },
+	{ID:"2" , NAME:"Ivysaur" , TYPE1:"grass" , TYPE2:"poison" },
+	{ID:"3" , NAME:"Venusaur" , TYPE1:"grass" , TYPE2:"poison" },
 }
 func main() {
 	router := gin.Default()
 
-	router.GET("/pokedexs", getPokeDex)
-	router.GET("/pokedexs/:id", getPokeDexByID)
-	router.POST("/pokedexs", addPokemon)
-	router.PUT("/pokedexs/:id", updatePokeDex)
-	router.DELETE("/pokedexs/:id", deletePokeDex)
+	router.GET("/pokemons", getPokeDex)
+	router.GET("/pokemons/:id", getPokeDexByID)
+	router.POST("/pokemons", addPokemon)
+	router.PUT("/pokemons/:id", updatePokeDex)
+	router.DELETE("/pokemons/:id", deletePokemon)
 
 	router.Run(":8080")
 }
 func getPokeDex(c *gin.Context){
-	c.IndentedJSON(http.StatusOK,pokedexs)
+	c.IndentedJSON(http.StatusOK,pokemons)
 }
 
 func getPokeDexByID(c *gin.Context){
 	id := c.Param("id")
-	for _, a := range pokedexs {
+	for _, a := range pokemons {
 		if a.ID == id {
 			c.IndentedJSON(http.StatusOK, a)
 			return
@@ -45,7 +47,7 @@ func addPokemon(c *gin.Context){
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "ID in body does not match ID in path"})
 		return
 	}
-	pokedexs = append(pokedexs, newPokemon)
+	pokemons = append(pokemons, newPokemon)
 	c.IndentedJSON(http.StatusCreated, newPokemon)
 }
 func updatePokeDex(c *gin.Context){
@@ -55,28 +57,28 @@ func updatePokeDex(c *gin.Context){
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	for i, b := range pokedexs{
+	for i, b := range pokemons{
 		if b.ID == id {
 			if updatePokeDex.ID != "" && updatePokeDex.ID != id {
 				c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "ID in body does not match ID in path"})
 				return
 			}
-			pokedexs[i] = updatePokeDex
-			pokedexs[i].ID = id
-			c.IndentedJSON(http.StatusOK , pokedexs[i])
+			pokemons[i] = updatePokeDex
+			pokemons[i].ID = id
+			c.IndentedJSON(http.StatusOK , pokemons[i])
 			return
 		}
 	}
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "PokeDex not found"})
 }
-func deletePokeDex(c *gin.Context)  {
+func deletePokemon(c *gin.Context)  {
 	id := c.Param("id")
-	for i , b := range pokedexs{
+	for i , b := range pokemons{
 		if b.ID == id {
-			pokedexs = append(pokedexs[:i], pokedexs[i+1:]...)
-			c.IndentedJSON(http.StatusOK, gin.H{"message": "PokeDex deleted"})
+			pokemons = append(pokemons[:i], pokemons[i+1:]...)
+			c.IndentedJSON(http.StatusOK, gin.H{"message": "Pokemon deleted"})
 			return			
 		}
 	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "PokeDex not found"})
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Pokemon not found"})
 }
