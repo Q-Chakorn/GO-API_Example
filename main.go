@@ -1,30 +1,27 @@
-package main
+package main //ระบุว่าเป็น package หลัก
 import (
-	"net/http"
-	"github.com/gin-gonic/gin"
-)
+	"net/http" // library สำหรับการจัดการ HTTP requests
+	"github.com/gin-gonic/gin" // library Gin สำหรับการสร้าง RESTful API
+) // เรียกใช้ library ที่จำเป็น
 
 type PokeDex struct {
 	ID	string `json:"id"`
 	NAME	string `json:"name"`
-	TYPE1	string `json:"type1"`
-	TYPE2 string `json:"type2"`
+	TYPE	[]string `json:"type"`
 }
 
-var pokemons = []PokeDex {
-	{ID:"1" , NAME:"Bulbasaur" , TYPE1:"grass" , TYPE2:"poison" },
-	{ID:"2" , NAME:"Ivysaur" , TYPE1:"grass" , TYPE2:"poison" },
-	{ID:"3" , NAME:"Venusaur" , TYPE1:"grass" , TYPE2:"poison" },
+var pokemons = []PokeDex{
+	{ID: "1", NAME: "Bulbasaur", TYPE: []string{"grass", "poison"}},
+	{ID: "2", NAME: "Ivysaur", TYPE: []string{"grass", "poison"}},
+	{ID: "3", NAME: "Venusaur", TYPE: []string{"grass", "poison"}},
 }
 func main() {
 	router := gin.Default()
-
 	router.GET("/pokemons", getPokeDex)
 	router.GET("/pokemons/:id", getPokeDexByID)
 	router.POST("/pokemons", addPokemon)
 	router.PUT("/pokemons/:id", updatePokeDex)
 	router.DELETE("/pokemons/:id", deletePokemon)
-
 	router.Run(":8080")
 }
 func getPokeDex(c *gin.Context){
