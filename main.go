@@ -7,16 +7,16 @@ import (
 
 // PokeDex struct สำหรับเก็บข้อมูลของ Pokemon
 type PokeDex struct {
-	ID   string   `json:"id"`
-	NAME string   `json:"name"`
-	TYPE []string `json:"type"` // slice(ชุดของข้อมูลหลายค่าเหมือน array) ของ string สำหรับเก็บประเภทของ Pokemon
+	ID      string   `json:"id"`
+	NAME    string   `json:"name"`
+	ELEMENT []string `json:"element"` // slice(ชุดของข้อมูลหลายค่าเหมือน array) ของ string สำหรับเก็บประเภทของ Pokemon
 }
 
 // Mock data สำหรับเก็บข้อมูล Pokemon
 var pokemons = []PokeDex{
-	{ID: "1", NAME: "Bulbasaur", TYPE: []string{"grass", "poison"}},
-	{ID: "2", NAME: "Ivysaur", TYPE: []string{"grass", "poison"}},
-	{ID: "3", NAME: "Venusaur", TYPE: []string{"grass", "poison"}},
+	{ID: "1", NAME: "Bulbasaur", ELEMENT: []string{"grass", "poison"}},
+	{ID: "2", NAME: "Ivysaur", ELEMENT: []string{"grass", "poison"}},
+	{ID: "3", NAME: "Venusaur", ELEMENT: []string{"grass", "poison"}},
 }
 
 // ฟังก์ชัน main สำหรับเริ่มต้นโปรแกรม web server ด้วย Gin
