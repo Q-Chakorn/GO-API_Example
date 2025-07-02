@@ -36,7 +36,7 @@ func getPokeDex(c *gin.Context) {
 }
 
 // ฟังก์ชัน handler ที่ใช้ดึงข้อมูลโปเกม่อนตาม ID
-func getPokeDexByID(c *gin.Context) {
+func getPokeDexByID(c *gin.Context) { // คือ obj สำคัญที่ใช้จัดการทั้ง request และ response
 	id := c.Param("id") // ดึงค่าพารามิเตอร์ id จาก URL ที่ผู้ใช้ส่งมา
 	for _, a := range pokemons {
 		if a.ID == id {
@@ -44,33 +44,43 @@ func getPokeDexByID(c *gin.Context) {
 			return
 		}
 	} // วนลูปดูโปเกม่อนทุกตัวใน slice pokemons ถ้าเจอโปเกม่อนที่มี id ตรงกับที่รับมา ส่งข้อมูลโปเกม่อนตัวนั้นกลับไปในรูปแบบ JSON พร้อมสถานะ 200
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Pokemon not found"}) // ถ้าไม่เจอ id ส่งข้อความแจ้งว่าไม่พบข้อมูล (404 Not Found) กลับมา
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Pokemon not found"}) // ถ้าไม่เจอ id ส่งข้อความแจ้งว่าไม่พบข้อมูล (Pokemon not found) กลับมา
 }
+
+// ฟังก์ชัน handler ที่ใช้เพิ่มโปเกม่อนใหม่
 func addPokemon(c *gin.Context) {
-	var newPokemon PokeDex
-	if err := c.BindJSON(&newPokemon); err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "ID in body does not match ID in path"})
+	var newPokemon PokeDex                          //ประกาศตัวแปร newPokemon ชนิด PokeDex เพื่อเก็บข้อมูลโปเกม่อนใหม่ที่รับเข้ามา
+	if err := c.BindJSON(&newPokemon); err != nil { // BindJSON เพื่ออ่านข้อมูล JSON จาก request แล้วแปลงใส่ตัวแปร newPokemon ถ้าแปลงสำเร็จ err จะเป็น nil
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Invalid request body"})
 		return
 	}
-	pokemons = append(pokemons, newPokemon)
-	c.IndentedJSON(http.StatusCreated, newPokemon)
+	for _, checkId := range pokemons { // ตรวจสอบว่า ID ซ้ำหรือไม่
+		if checkId.ID == newPokemon.ID {
+			c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "ID already exists"})
+			return
+		}
+	}
+	pokemons = append(pokemons, newPokemon)        // เพิ่มข้อมูลโปเกม่อนใหม่เข้าไปใน slice pokemons
+	c.IndentedJSON(http.StatusCreated, newPokemon) // ส่งข้อมูลโปเกม่อนที่เพิ่มใหม่กลับไปให้ client พร้อมสถานะ 201 Created
 }
+
+// ฟังก์ชัน handler ที่ใช้แก้ไขข้อมูลโปเกม่อนตาม ID
 func updatePokeDex(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("id") // ดึงค่า id จาก URL พารามิเตอร์ (เช่น /pokemons/1 จะได้ id = "1")
 	var updatePokeDex PokeDex
 	if err := c.BindJSON(&updatePokeDex); err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	for i, b := range pokemons {
-		if b.ID == id {
+	for index, pokemon := range pokemons {
+		if pokemon.ID == id {
 			if updatePokeDex.ID != "" && updatePokeDex.ID != id {
 				c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "ID in body does not match ID in path"})
 				return
 			}
-			pokemons[i] = updatePokeDex
-			pokemons[i].ID = id
-			c.IndentedJSON(http.StatusOK, pokemons[i])
+			pokemons[index] = updatePokeDex
+			pokemons[index].ID = id
+			c.IndentedJSON(http.StatusOK, pokemons[index])
 			return
 		}
 	}
@@ -78,9 +88,9 @@ func updatePokeDex(c *gin.Context) {
 }
 func deletePokemon(c *gin.Context) {
 	id := c.Param("id")
-	for i, b := range pokemons {
-		if b.ID == id {
-			pokemons = append(pokemons[:i], pokemons[i+1:]...)
+	for index, pokemon := range pokemons {
+		if pokemon.ID == id {
+			pokemons = append(pokemons[:index], pokemons[index+1:]...)
 			c.IndentedJSON(http.StatusOK, gin.H{"message": "Pokemon deleted"})
 			return
 		}
