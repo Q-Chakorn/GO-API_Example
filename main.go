@@ -74,22 +74,24 @@ func updatePokeDex(c *gin.Context) {
 	}
 	for index, pokemon := range pokemons {
 		if pokemon.ID == id {
-			if updatePokeDex.ID != "" && updatePokeDex.ID != id {
+			if updatePokeDex.ID != "" && updatePokeDex.ID != id { // ถ้าใน body มีการส่ง ID มาและ ID นั้นไม่ตรงกับ id ใน path
 				c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "ID in body does not match ID in path"})
 				return
 			}
-			pokemons[index] = updatePokeDex
-			pokemons[index].ID = id
+			pokemons[index] = updatePokeDex // อัปเดตข้อมูลโปเกม่อนใน slice pokemons ที่ตำแหน่ง index ด้วยข้อมูลใหม่ที่รับมา
+			pokemons[index].ID = id         // ตั้งค่า ID ของโปเกม่อนที่อัปเดตให้ตรงกับ id ที่รับมาใน path
 			c.IndentedJSON(http.StatusOK, pokemons[index])
 			return
 		}
 	}
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Pokemon not found"})
 }
+
+// ฟังก์ชัน handler ที่ใช้ลบโปเกม่อนตาม ID
 func deletePokemon(c *gin.Context) {
 	id := c.Param("id")
-	for index, pokemon := range pokemons {
-		if pokemon.ID == id {
+	for index, pokemon := range pokemons { // วนลูปดูโปเกม่อนทุกตัวใน slice pokemons
+		if pokemon.ID == id { // ถ้าเจอโปเกม่อนที่มี id ตรงกับที่รับมา
 			pokemons = append(pokemons[:index], pokemons[index+1:]...)
 			c.IndentedJSON(http.StatusOK, gin.H{"message": "Pokemon deleted"})
 			return
