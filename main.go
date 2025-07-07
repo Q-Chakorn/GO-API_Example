@@ -27,7 +27,7 @@ func main() {
 	router.POST("/pokemons", addPokemon)          //เพิ่มโปเกม่อนใหม่
 	router.PUT("/pokemons/:id", updatePokeDex)    //แก้ไขข้อมูลโปเกม่อนตาม id
 	router.DELETE("/pokemons/:id", deletePokemon) //ลบโปเกม่อนด้วย id
-	router.Run(":8080")                           //run server ที่ port 8080
+	router.Run(":8080")                           //run server ที่ port 8080                                  // เรียกใช้ฟังก์ชัน Hello จาก package user เพื่อแสดงข้อความทักทาย
 }
 
 // ฟังก์ชัน handler(รับข้อมูลจาก request) ที่ใช้ดึงข้อมูลโปเกม่อนทั้งหมด
